@@ -1,0 +1,23 @@
+{
+  "node": "n8n-nodes-base.moyKlass",
+  "nodeVersion": "1.0",
+  "codex": {
+    "categories": ["CRM"],
+    "subcategories": {
+      "CRM": ["Education"]
+    },
+    "resources": {
+      "credentialDocumentation": [
+        {
+          "url": "https://api.moyklass.com"
+        }
+      ],
+      "primaryDocumentation": [
+        {
+          "url": "https://api.moyklass.com"
+        }
+      ]
+    }
+  }
+}
+

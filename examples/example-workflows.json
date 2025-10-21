@@ -1,0 +1,253 @@
+{
+  "workflows": [
+    {
+      "name": "Пример 1: Получение всех учеников",
+      "description": "Простой workflow для получения списка всех учеников",
+      "nodes": [
+        {
+          "name": "Start",
+          "type": "n8n-nodes-base.start",
+          "position": [250, 300]
+        },
+        {
+          "name": "Get All Users",
+          "type": "n8n-nodes-moyklass.moyKlass",
+          "position": [450, 300],
+          "parameters": {
+            "resource": "user",
+            "operation": "getAll",
+            "returnAll": true,
+            "additionalFields": {
+              "includeArchive": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Пример 2: Создание ученика и добавление в группу",
+      "description": "Workflow для создания нового ученика и его записи в группу",
+      "nodes": [
+        {
+          "name": "Start",
+          "type": "n8n-nodes-base.start",
+          "position": [250, 300]
+        },
+        {
+          "name": "Create Student",
+          "type": "n8n-nodes-moyklass.moyKlass",
+          "position": [450, 300],
+          "parameters": {
+            "resource": "user",
+            "operation": "create",
+            "body": "{\n  \"name\": \"Иван Петров\",\n  \"phone\": \"+79001234567\",\n  \"email\": \"ivan@example.com\",\n  \"statusId\": 1\n}"
+          }
+        },
+        {
+          "name": "Create Join",
+          "type": "n8n-nodes-moyklass.moyKlass",
+          "position": [650, 300],
+          "parameters": {
+            "resource": "join",
+            "operation": "create",
+            "body": "{\n  \"userId\": \"={{$json.id}}\",\n  \"classId\": 123,\n  \"statusId\": 1\n}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Пример 3: Получение платежей за месяц",
+      "description": "Получение всех платежей за указанный месяц",
+      "nodes": [
+        {
+          "name": "Start",
+          "type": "n8n-nodes-base.start",
+          "position": [250, 300]
+        },
+        {
+          "name": "Get Payments",
+          "type": "n8n-nodes-moyklass.moyKlass",
+          "position": [450, 300],
+          "parameters": {
+            "resource": "payment",
+            "operation": "getAll",
+            "returnAll": true,
+            "additionalFields": {
+              "dateFrom": "2024-01-01",
+              "dateTo": "2024-01-31"
+            }
+          }
+        },
+        {
+          "name": "Calculate Total",
+          "type": "n8n-nodes-base.aggregate",
+          "position": [650, 300],
+          "parameters": {
+            "aggregate": "aggregateAllItemData",
+            "fieldsToAggregate": {
+              "fieldToAggregate": [
+                {
+                  "fieldToAggregate": "sum",
+                  "renameField": true,
+                  "outputFieldName": "totalAmount"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Пример 4: Синхронизация уроков с Google Calendar",
+      "description": "Получение уроков из MoyKlass и создание событий в Google Calendar",
+      "nodes": [
+        {
+          "name": "Schedule Trigger",
+          "type": "n8n-nodes-base.scheduleTrigger",
+          "position": [250, 300],
+          "parameters": {
+            "rule": {
+              "interval": [
+                {
+                  "field": "hours",
+                  "hoursInterval": 1
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Lessons",
+          "type": "n8n-nodes-moyklass.moyKlass",
+          "position": [450, 300],
+          "parameters": {
+            "resource": "lesson",
+            "operation": "getAll",
+            "additionalFields": {
+              "dateFrom": "={{$now.format('YYYY-MM-DD')}}",
+              "dateTo": "={{$now.plus(7, 'days').format('YYYY-MM-DD')}}"
+            }
+          }
+        },
+        {
+          "name": "Create Calendar Event",
+          "type": "n8n-nodes-base.googleCalendar",
+          "position": [650, 300],
+          "parameters": {
+            "operation": "create",
+            "summary": "={{$json.title}}",
+            "start": "={{$json.date}}T{{$json.beginTime}}",
+            "end": "={{$json.date}}T{{$json.endTime}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Пример 5: Отправка уведомлений о пропусках",
+      "description": "Проверка пропусков уроков и отправка уведомлений",
+      "nodes": [
+        {
+          "name": "Schedule Daily",
+          "type": "n8n-nodes-base.scheduleTrigger",
+          "position": [250, 300],
+          "parameters": {
+            "rule": {
+              "interval": [
+                {
+                  "field": "days",
+                  "daysInterval": 1,
+                  "triggerAtHour": 9
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Lesson Records",
+          "type": "n8n-nodes-moyklass.moyKlass",
+          "position": [450, 300],
+          "parameters": {
+            "resource": "lessonRecord",
+            "operation": "getAll",
+            "additionalFields": {
+              "dateFrom": "={{$now.minus(1, 'days').format('YYYY-MM-DD')}}",
+              "dateTo": "={{$now.format('YYYY-MM-DD')}}"
+            }
+          }
+        },
+        {
+          "name": "Filter Absences",
+          "type": "n8n-nodes-base.filter",
+          "position": [650, 300],
+          "parameters": {
+            "conditions": {
+              "string": [
+                {
+                  "value1": "={{$json.visit}}",
+                  "value2": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Student Info",
+          "type": "n8n-nodes-moyklass.moyKlass",
+          "position": [850, 300],
+          "parameters": {
+            "resource": "user",
+            "operation": "get",
+            "id": "={{$json.userId}}"
+          }
+        },
+        {
+          "name": "Send Notification",
+          "type": "n8n-nodes-base.emailSend",
+          "position": [1050, 300],
+          "parameters": {
+            "toEmail": "={{$json.email}}",
+            "subject": "Уведомление о пропуске урока",
+            "text": "Здравствуйте, {{$json.name}}!\n\nВы пропустили урок вчера. Пожалуйста, свяжитесь с нами."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Пример 6: Webhook для новых лидов",
+      "description": "Обработка webhook с новыми лидами и создание в MoyKlass",
+      "nodes": [
+        {
+          "name": "Webhook",
+          "type": "n8n-nodes-base.webhook",
+          "position": [250, 300],
+          "parameters": {
+            "path": "new-lead",
+            "responseMode": "onReceived",
+            "httpMethod": "POST"
+          }
+        },
+        {
+          "name": "Create Lead",
+          "type": "n8n-nodes-moyklass.moyKlass",
+          "position": [450, 300],
+          "parameters": {
+            "resource": "user",
+            "operation": "create",
+            "body": "{\n  \"name\": \"={{$json.body.name}}\",\n  \"phone\": \"={{$json.body.phone}}\",\n  \"email\": \"={{$json.body.email}}\",\n  \"statusId\": 2\n}"
+          }
+        },
+        {
+          "name": "Create Task",
+          "type": "n8n-nodes-moyklass.moyKlass",
+          "position": [650, 300],
+          "parameters": {
+            "resource": "task",
+            "operation": "create",
+            "body": "{\n  \"title\": \"Связаться с новым лидом\",\n  \"userId\": \"={{$json.id}}\",\n  \"deadline\": \"={{$now.plus(1, 'days').format('YYYY-MM-DD')}}\"\n}"
+          }
+        }
+      ]
+    }
+  ]
+}
+
