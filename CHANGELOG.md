@@ -5,7 +5,7 @@
 Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.0.0/),
 и этот проект придерживается [Semantic Versioning](https://semver.org/lang/ru/).
 
-## [1.0.0] - 2024-10-21
+## [1.0.0] - 2025-10-21
 
 ### Добавлено
 - Первый релиз n8n community node для MoyKlass
