@@ -1,5 +1,4 @@
 import {
-	IAuthenticateGeneric,
 	ICredentialTestRequest,
 	ICredentialType,
 	INodeProperties,
@@ -8,7 +7,7 @@ import {
 export class MoyKlassApi implements ICredentialType {
 	name = 'moyKlassApi';
 	displayName = 'MoyKlass API';
-	documentationUrl = 'https://api.moyklass.com';
+	documentationUrl = 'https://api.moyklass.com/v1/docs';
 	properties: INodeProperties[] = [
 		{
 			displayName: 'API Key',
@@ -17,24 +16,27 @@ export class MoyKlassApi implements ICredentialType {
 			typeOptions: { password: true },
 			default: '',
 			required: true,
-			description: 'API ключ для доступа к MoyKlass API. Получить можно в настройках CRM.',
+			placeholder: 'Oul76YVXXQnH3YWWidkDaHyoUBGHCOyOO0oky7y6T1EJBAWnEi',
+			description: 'API ключ для доступа к MoyKlass API. Получить можно в CRM: Настройки → API',
+		},
+		{
+			displayName: 'API Base URL',
+			name: 'baseUrl',
+			type: 'string',
+			default: 'https://api.moyklass.com',
+			required: false,
+			description: 'Базовый URL API (оставьте по умолчанию)',
 		},
 	];
 
-	authenticate: IAuthenticateGeneric = {
-		type: 'generic',
-		properties: {
-			headers: {
-				'x-api-key': '={{$credentials.apiKey}}',
-			},
-		},
-	};
-
 	test: ICredentialTestRequest = {
 		request: {
-			baseURL: 'https://api.moyklass.com',
-			url: '/v1/company/managers',
-			method: 'GET',
+			method: 'POST',
+			baseURL: '={{$credentials?.baseUrl || "https://api.moyklass.com"}}',
+			url: '/v1/company/auth/getToken',
+			body: {
+				apiKey: '={{$credentials.apiKey}}',
+			},
 		},
 	};
 }
