@@ -4,6 +4,11 @@ interface AttributeInfo {
 	id: number;
 	name: string;
 	type: string;
+	// API MoyKlass возвращает "variants" для select/multiselect атрибутов
+	variants?: Array<{
+		id: number;
+		name: string;
+	}>;
 	values?: Array<{
 		id: number;
 		name: string;
@@ -68,7 +73,8 @@ export async function normalizeAttributeValue(
 	const attrType = attrInfo.type;
 
 	// Получаем список значений (может быть в разных полях)
-	const valuesList = attrInfo.values || attrInfo.selectOptions || attrInfo.options || [];
+	// API MoyKlass возвращает "variants" для select/multiselect атрибутов
+	const valuesList = attrInfo.variants || attrInfo.values || attrInfo.selectOptions || attrInfo.options || [];
 
 	// Обработка в зависимости от типа атрибута
 	switch (attrType) {
