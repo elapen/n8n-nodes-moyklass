@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.7.1] - 2025-10-22
+
+### Fixed
+- Исправлен Comments API: теперь использует правильный endpoint `/v1/company/userComments`
+- Добавлены нормальные поля для Comments вместо JSON
+  - Основные: userId, comment (обязательные)
+  - Дополнительные: showToUser, lessonId, classId, managerId
+- Все операции протестированы и работают: Get All, Get, Create, Update, Delete
+
 ## [1.7.0] - 2025-10-22
 
 ### Added

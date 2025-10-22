@@ -32,6 +32,7 @@ import { managerOperations, managerFields } from './descriptions/ManagerDescript
 import { classOperations, classFields } from './descriptions/ClassDescription';
 import { lessonOperations, lessonFields } from './descriptions/LessonDescription';
 import { joinOperations, joinFields } from './descriptions/JoinDescription';
+import { userCommentOperations, userCommentFields } from './descriptions/UserCommentDescription';
 import { 
 	contractOperations,
 	contractFields,
@@ -59,6 +60,7 @@ import { executeManagerOperation } from './operations/ManagerOperations';
 import { executeClassOperation } from './operations/ClassOperations';
 import { executeLessonOperation } from './operations/LessonOperations';
 import { executeJoinOperation } from './operations/JoinOperations';
+import { executeUserCommentOperation } from './operations/UserCommentOperations';
 import { executeGenericOperation } from './operations/GenericOperations';
 
 export class MoyKlass implements INodeType {
@@ -108,6 +110,10 @@ export class MoyKlass implements INodeType {
 			// Join
 			...joinOperations,
 			...joinFields,
+
+			// User Comment
+			...userCommentOperations,
+			...userCommentFields,
 
 			// Invoice
 			getBasicOperations('invoice', 'счета'),
@@ -290,7 +296,7 @@ export class MoyKlass implements INodeType {
 			},
 
 			// Body data for remaining generic resources (without proper fields yet)
-			// Note: User, Payment, Manager, Class, Lesson, Join, Contract, Rate, TaskCategory, SubscriptionGrouping, ClassAttribute, BusyTime have proper fields
+			// Note: User, Payment, Manager, Class, Lesson, Join, Comment, Contract, Rate, TaskCategory, SubscriptionGrouping, ClassAttribute, BusyTime have proper fields
 			{
 				displayName: 'Данные',
 				name: 'bodyData',
@@ -300,7 +306,7 @@ export class MoyKlass implements INodeType {
 					show: {
 						resource: [
 							'invoice', 'task', 
-							'file', 'subscription', 'userSubscription', 'comment', 
+							'file', 'subscription', 'userSubscription', 
 							'cashbox', 'family', 'room', 'lessonRecord',
 						],
 						operation: ['create', 'update'],
@@ -390,6 +396,12 @@ export class MoyKlass implements INodeType {
 					qs = result.qs;
 				} else if (resource === 'join') {
 					const result = await executeJoinOperation.call(this, operation, i);
+					endpoint = result.endpoint;
+					method = result.method;
+					body = result.body;
+					qs = result.qs;
+				} else if (resource === 'comment') {
+					const result = await executeUserCommentOperation.call(this, operation, i);
 					endpoint = result.endpoint;
 					method = result.method;
 					body = result.body;
