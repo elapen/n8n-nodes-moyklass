@@ -257,3 +257,25 @@ export async function loadUserTags(this: ILoadOptionsFunctions): Promise<INodePr
 	}));
 }
 
+export async function loadRoles(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+	const credentials = await this.getCredentials('moyKlassApi');
+	const apiKey = credentials.apiKey as string;
+	const baseUrl = (credentials.baseUrl as string) || 'https://api.moyklass.com';
+	
+	const accessToken = await getToken(this, apiKey, baseUrl);
+	
+	const roles = await this.helpers.request({
+		method: 'GET',
+		url: `${baseUrl}/v1/company/roles`,
+		headers: {
+			'x-access-token': accessToken,
+		},
+		json: true,
+	}) as any[];
+
+	return roles.map((role: any) => ({
+		name: role.name,
+		value: role.id,
+	}));
+}
+

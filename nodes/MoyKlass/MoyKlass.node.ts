@@ -22,11 +22,16 @@ import {
 	loadUserAttributes,
 	loadClassAttributes,
 	loadUserTags,
+	loadRoles,
 } from './helpers/LoadOptionsHelper';
 
 import { resourceList } from './descriptions/ResourceList';
 import { userOperations, userFields } from './descriptions/UserDescription';
 import { paymentOperations, paymentFields } from './descriptions/PaymentDescription';
+import { managerOperations, managerFields } from './descriptions/ManagerDescription';
+import { classOperations, classFields } from './descriptions/ClassDescription';
+import { lessonOperations, lessonFields } from './descriptions/LessonDescription';
+import { joinOperations, joinFields } from './descriptions/JoinDescription';
 import { 
 	contractOperations,
 	contractFields,
@@ -50,6 +55,10 @@ import {
 
 import { executeUserOperation } from './operations/UserOperations';
 import { executePaymentOperation } from './operations/PaymentOperations';
+import { executeManagerOperation } from './operations/ManagerOperations';
+import { executeClassOperation } from './operations/ClassOperations';
+import { executeLessonOperation } from './operations/LessonOperations';
+import { executeJoinOperation } from './operations/JoinOperations';
 import { executeGenericOperation } from './operations/GenericOperations';
 
 export class MoyKlass implements INodeType {
@@ -84,25 +93,25 @@ export class MoyKlass implements INodeType {
 			...paymentOperations,
 			...paymentFields,
 
+			// Manager
+			...managerOperations,
+			...managerFields,
+
+			// Class
+			...classOperations,
+			...classFields,
+
+			// Lesson
+			...lessonOperations,
+			...lessonFields,
+
+			// Join
+			...joinOperations,
+			...joinFields,
+
 			// Invoice
 			getBasicOperations('invoice', 'счета'),
 			getIdField('invoice'),
-
-			// Manager
-			getBasicOperations('manager', 'сотрудников'),
-			getIdField('manager'),
-
-			// Lesson
-			getBasicOperations('lesson', 'уроки'),
-			getIdField('lesson'),
-
-			// Class
-			getBasicOperations('class', 'группы'),
-			getIdField('class'),
-
-			// Join
-			getBasicOperations('join', 'записи в группы'),
-			getIdField('join'),
 
 			// Task
 			getBasicOperations('task', 'задачи'),
@@ -281,7 +290,7 @@ export class MoyKlass implements INodeType {
 			},
 
 			// Body data for remaining generic resources (without proper fields yet)
-			// Note: User, Payment, Contract, Rate, TaskCategory, SubscriptionGrouping, ClassAttribute, BusyTime have proper fields
+			// Note: User, Payment, Manager, Class, Lesson, Join, Contract, Rate, TaskCategory, SubscriptionGrouping, ClassAttribute, BusyTime have proper fields
 			{
 				displayName: 'Данные',
 				name: 'bodyData',
@@ -290,7 +299,7 @@ export class MoyKlass implements INodeType {
 				displayOptions: {
 					show: {
 						resource: [
-							'invoice', 'manager', 'lesson', 'class', 'join', 'task', 
+							'invoice', 'task', 
 							'file', 'subscription', 'userSubscription', 'comment', 
 							'cashbox', 'family', 'room', 'lessonRecord',
 						],
@@ -319,6 +328,7 @@ export class MoyKlass implements INodeType {
 			loadUserAttributes,
 			loadClassAttributes,
 			loadUserTags,
+			loadRoles,
 		},
 	};
 
@@ -356,6 +366,30 @@ export class MoyKlass implements INodeType {
 					customAttributes = result.customAttributes;
 				} else if (resource === 'payment') {
 					const result = await executePaymentOperation.call(this, operation, i);
+					endpoint = result.endpoint;
+					method = result.method;
+					body = result.body;
+					qs = result.qs;
+				} else if (resource === 'manager') {
+					const result = await executeManagerOperation.call(this, operation, i);
+					endpoint = result.endpoint;
+					method = result.method;
+					body = result.body;
+					qs = result.qs;
+				} else if (resource === 'class') {
+					const result = await executeClassOperation.call(this, operation, i);
+					endpoint = result.endpoint;
+					method = result.method;
+					body = result.body;
+					qs = result.qs;
+				} else if (resource === 'lesson') {
+					const result = await executeLessonOperation.call(this, operation, i);
+					endpoint = result.endpoint;
+					method = result.method;
+					body = result.body;
+					qs = result.qs;
+				} else if (resource === 'join') {
+					const result = await executeJoinOperation.call(this, operation, i);
 					endpoint = result.endpoint;
 					method = result.method;
 					body = result.body;
