@@ -4,6 +4,8 @@
 
 Community node для n8n, позволяющий работать с CRM **МойКласс** (MoyKlass).
 
+Разработан и поддерживается [105.kz](https://105.kz/business/crm-integrations) — ИТ-компанией полного цикла из Казахстана (интеграции CRM, ERP, LMS и приложения под заказ). Описание модуля: [105.kz/cases/moyklass-n8n](https://105.kz/cases/moyklass-n8n).
+
 ## Установка
 
 ### Установка через Community Nodes (рекомендуется)
